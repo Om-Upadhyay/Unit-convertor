@@ -100,6 +100,35 @@ The model sees the tool's name, input schema, and docstring when deciding how to
 - This is a one-turn demo; it does not retain conversational history between the four tests.
 - It requires a local Ollama service and the `qwen2.5:3b` model to run.
 
+## Unit 3 and Unit 4 extension (four-person team)
+
+The extension is split into four easy-to-present modules:
+
+1. `memory_rag.py` — stores the preferred metric/imperial system and remembers the last conversion. It resolves follow-ups such as `now in pounds`.
+2. `conversion_agent.py` — the deterministic `convert_units` tool plus an offline reference-sheet lookup in `reference_units.md`. The sheet adds aliases such as `quintal` and `stone`.
+3. `parser_agent.py` — extracts the number and units. If a source unit is missing or ambiguous, it asks a clarification question instead of guessing.
+4. `checker_agent.py` — performs a reverse conversion and compares it with the original value. The critic loop is limited to two rounds.
+
+`pipeline.py` connects the four modules. The reverse check makes an error visible: if the forward result is wrong, converting it back will not match the original value within tolerance.
+
+### GUI
+
+The project also includes a lightweight Tkinter interface (no extra GUI package is needed):
+
+```powershell
+python gui.py
+```
+
+The GUI accepts real-time natural-language questions and displays the parser, converter, checker, and final-response trace. The original `python main.py` terminal demo remains available.
+
+### Four-person presentation split
+
+Each person can present one module: (1) memory and local RAG, (2) conversion tool, (3) parser and ambiguity handling, and (4) reverse checker/critic loop. A fifth shared part, if needed, is the GUI and integration.
+
+### Reverse-check evidence
+
+For a valid request the trace includes `ConverterAgent/convert_units` followed by `CheckerAgent(reverse)` and the message `Reverse check passed.` If a deliberately altered forward result is supplied to the checker, the recovered value differs and it reports `Reverse check caught a possible conversion error.`
+
 ## Jury Questions
 
 ### Q1. Why does temperature=0 matter for this kind of tool-calling task?

@@ -1,4 +1,4 @@
-"""Terminal demo for a local Ollama-powered unit-conversion agent."""
+"""Unit-conversion agent."""
 
 from __future__ import annotations
 
