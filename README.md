@@ -121,6 +121,19 @@ python gui.py
 
 The GUI accepts real-time natural-language questions and displays the parser, converter, checker, and final-response trace. The original `python main.py` terminal demo remains available.
 
+## Single-file runner
+
+All Unit 3 and Unit 4 features are also bundled in `unit_converter_all_in_one.py`:
+
+```powershell
+python unit_converter_all_in_one.py              # GUI
+python unit_converter_all_in_one.py --chat       # live terminal mode
+python unit_converter_all_in_one.py --demo       # four required examples
+python unit_converter_all_in_one.py --evidence   # wrong-result and ambiguity evidence
+```
+
+The preferred system is changed by typing `metric` or `imperial` in chat/GUI. When a target is omitted, that preference supplies the default target (kilograms/meters for metric, pounds/feet for imperial). The resolver reads `reference_units.md` for documented aliases such as quintal and stone. The evidence command visibly demonstrates that ambiguity is handled before a converter call and that the reverse checker catches an intentionally wrong result.
+
 ### Four-person presentation split
 
 Each person can present one module: (1) memory and local RAG, (2) conversion tool, (3) parser and ambiguity handling, and (4) reverse checker/critic loop. A fifth shared part, if needed, is the GUI and integration.
