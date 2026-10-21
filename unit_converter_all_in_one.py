@@ -112,6 +112,17 @@ def gui():
     p=Pipeline(); root=tk.Tk(); root.title("Unit Converter Assistant - 4 Agent Pipeline"); root.geometry("900x650")
     tk.Label(root,text="UNIT CONVERTER ASSISTANT",font=("Segoe UI",18,"bold")).pack(pady=8)
     tk.Label(root,text="Memory/RAG  →  Parser Agent  →  Converter Tool  →  Checker Agent",font=("Segoe UI",11)).pack()
+    preference_bar=tk.Frame(root); preference_bar.pack(pady=6)
+    tk.Label(preference_bar,text="Preferred unit system:").pack(side=tk.LEFT,padx=4)
+    preference=tk.StringVar(value="metric")
+    tk.OptionMenu(preference_bar,preference,"metric","imperial").pack(side=tk.LEFT)
+    preference_status=tk.Label(preference_bar,text="Current: metric")
+    preference_status.pack(side=tk.LEFT,padx=8)
+    def save_preference():
+        message=p.memory.set(preference.get())
+        preference_status.config(text="Current: "+p.memory.preference)
+        out.insert(tk.END,"MEMORY: "+message+"\nFuture default units will use this system.\n\n")
+    tk.Button(preference_bar,text="Save Preference",command=save_preference).pack(side=tk.LEFT,padx=4)
     stages=tk.Frame(root); stages.pack(pady=8)
     stage_labels=[]
     for name in ("1. Memory + RAG", "2. Parser Agent", "3. Converter Tool", "4. Checker Agent"):
