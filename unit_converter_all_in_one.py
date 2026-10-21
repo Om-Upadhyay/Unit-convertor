@@ -109,13 +109,35 @@ def chat():
 def gui():
     import tkinter as tk
     from tkinter import scrolledtext
-    p=Pipeline(); root=tk.Tk(); root.title("Unit Converter Assistant"); root.geometry("700x500")
-    entry=tk.Entry(root,width=70);entry.pack(pady=10); out=scrolledtext.ScrolledText(root,height=20);out.pack(fill=tk.BOTH,expand=True)
+    p=Pipeline(); root=tk.Tk(); root.title("Unit Converter Assistant - 4 Agent Pipeline"); root.geometry("900x650")
+    tk.Label(root,text="UNIT CONVERTER ASSISTANT",font=("Segoe UI",18,"bold")).pack(pady=8)
+    tk.Label(root,text="Memory/RAG  →  Parser Agent  →  Converter Tool  →  Checker Agent",font=("Segoe UI",11)).pack()
+    stages=tk.Frame(root); stages.pack(pady=8)
+    stage_labels=[]
+    for name in ("1. Memory + RAG", "2. Parser Agent", "3. Converter Tool", "4. Checker Agent"):
+        label=tk.Label(stages,text=name+"\nWaiting",width=19,height=2,bg="#e6e6e6",relief=tk.GROOVE)
+        label.pack(side=tk.LEFT,padx=4); stage_labels.append(label)
+    entry=tk.Entry(root,width=85);entry.pack(pady=8); out=scrolledtext.ScrolledText(root,height=22);out.pack(fill=tk.BOTH,expand=True,padx=10)
     def ask(e=None):
         q=entry.get().strip()
         if q:
-            r,t=p.ask(q);out.insert(tk.END,f"You: {q}\nTrace: {' -> '.join(t)}\nAssistant: {r}\n\n");entry.delete(0,tk.END)
-    tk.Button(root,text="Convert",command=ask).pack();entry.bind("<Return>",ask);root.mainloop()
+            for label in stage_labels: label.config(bg="#fff2cc")
+            r,t=p.ask(q)
+            clarification = "Clarification" in t
+            stage_labels[0].config(text="1. Memory + RAG\nPreference/history loaded",bg="#d9ead3")
+            stage_labels[1].config(text="2. Parser Agent\n"+("Clarification asked" if clarification else "Value + units extracted"),bg="#fce5cd")
+            stage_labels[2].config(text="3. Converter Tool\n"+("Not called" if clarification else "Conversion completed"),bg="#d9ead3" if not clarification else "#f4cccc")
+            stage_labels[3].config(text="4. Checker Agent\n"+("Waiting" if clarification else ("Reverse check shown")),bg="#d9ead3" if not clarification else "#fff2cc")
+            out.insert(tk.END,f"USER QUERY: {q}\n\nVISIBLE AGENT TRACE:\n  {' -> '.join(t)}\n\nTOOL / CHECKER OUTPUT:\n{r}\n\n{'='*70}\n\n");out.see(tk.END);entry.delete(0,tk.END)
+    def show_evidence():
+        wrong="10 kilometer = 5 mile"
+        result=p.checker.verify(10,"kilometer","mile",wrong)
+        out.insert(tk.END,f"EVIDENCE - deliberate wrong conversion\nForward result: {wrong}\nChecker result: {result}\n\n")
+        out.see(tk.END)
+    buttons=tk.Frame(root);buttons.pack(pady=6)
+    tk.Button(buttons,text="Run Query",command=ask,width=16).pack(side=tk.LEFT,padx=4)
+    tk.Button(buttons,text="Show Wrong-Result Evidence",command=show_evidence,width=25).pack(side=tk.LEFT,padx=4)
+    entry.bind("<Return>",ask);root.mainloop()
 
 if __name__=="__main__":
     ap=argparse.ArgumentParser();ap.add_argument("--demo",action="store_true");ap.add_argument("--chat",action="store_true");ap.add_argument("--evidence",action="store_true");a=ap.parse_args()

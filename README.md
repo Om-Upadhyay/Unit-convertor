@@ -119,7 +119,7 @@ The project also includes a lightweight Tkinter interface (no extra GUI package 
 python gui.py
 ```
 
-The GUI accepts real-time natural-language questions and displays the parser, converter, checker, and final-response trace. The original `python main.py` terminal demo remains available.
+The GUI accepts real-time natural-language questions and displays four visible stage cards: Memory + RAG, Parser Agent, Converter Tool, and Checker Agent. Each card changes status after a query. For an ambiguous query, the Parser card says "Clarification asked" and the Converter card says "Not called", making the before-tool behavior visible. The `Show Wrong-Result Evidence` button displays the Checker catching a deliberately incorrect conversion.
 
 ## Single-file runner
 
